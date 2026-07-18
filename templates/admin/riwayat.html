@@ -1,0 +1,113 @@
+{% extends "base_admin.html" %}
+{% set page = 'riwayat' %}
+{% block title %}Riwayat Diagnosa | CornScan AI{% endblock %}
+
+{% block content %}
+<div class="topbar">
+  <div><h1>Riwayat Diagnosa</h1><p>Seluruh log hasil scan AI yang tersimpan</p></div>
+  <div class="admin-badge">
+    {% set foto = get_admin_foto() %}
+    {% if foto %}<img src="{{ url_for('static', filename='img/profile/' + foto) }}" class="ab-avatar">
+    {% else %}<div class="ab-default"><i class="bi bi-person-fill"></i></div>{% endif %}
+    <div><strong>{{ admin_nama }}</strong><small>Super Administrator</small></div>
+  </div>
+</div>
+
+<!-- FILTER -->
+<div class="card-box mb-4">
+  <form method="GET" action="/admin/riwayat" class="row g-2 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label">Cari</label>
+      <input type="text" name="search" class="form-control" placeholder="Penyakit / wilayah / kecamatan..." value="{{ search }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Dari</label>
+      <input type="date" name="dari" class="form-control" value="{{ dari }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Sampai</label>
+      <input type="date" name="sampai" class="form-control" value="{{ sampai }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Provinsi</label>
+      <select name="provinsi" class="form-select">
+        <option value="">Semua Provinsi</option>
+        {% for p in prov_list %}
+        <option value="{{ p }}" {% if prov_f==p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2 align-items-end">
+      <button type="submit" class="btn-hijau flex-fill"><i class="bi bi-search"></i> Cari</button>
+      <a href="/admin/riwayat" class="btn btn-outline-secondary flex-fill" style="border-radius:10px;font-size:13px;padding:10px;">Reset</a>
+    </div>
+  </form>
+</div>
+
+<!-- TABEL -->
+<div class="card-box">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Hasil: <span class="text-success">{{ data|length }}</span> data</h5>
+    <div class="d-flex gap-2">
+      <a href="/admin/riwayat/export/excel" class="btn btn-sm btn-success" style="border-radius:8px;font-size:12px;">
+        <i class="bi bi-file-earmark-excel-fill me-1"></i> Export Excel
+      </a>
+      <a href="/admin/riwayat/export/pdf" class="btn btn-sm btn-danger" style="border-radius:8px;font-size:12px;">
+        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
+      </a>
+    </div>
+  </div>
+
+  {% if data %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle table-stack">
+      <thead>
+        <tr>
+          <th>No</th><th>Gambar</th><th>Hasil</th><th>Akurasi</th>
+          <th>Provinsi</th><th>Kabupaten/Kota</th><th>Kecamatan</th>
+          <th>Tanggal</th><th>Waktu</th><th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in data %}
+      <tr>
+        <td data-label="No">{{ loop.index }}</td>
+        <td data-label="Gambar">
+          <img src="{{ url_for('static', filename='uploads/' + item.nama_file) }}"
+               style="width:64px;height:64px;border-radius:10px;object-fit:cover;">
+        </td>
+        <td data-label="Hasil">
+          <span class="bdg {% if 'Blight' in item.hasil_prediksi %}bdg-blight{% elif 'Rust' in item.hasil_prediksi %}bdg-rust{% elif 'Gray' in item.hasil_prediksi %}bdg-gray{% else %}bdg-healthy{% endif %}">
+            {{ item.hasil_prediksi|replace('_',' ') }}
+          </span>
+        </td>
+        <td data-label="Akurasi"><strong>{{ item.akurasi }}%</strong></td>
+        <td data-label="Provinsi" style="font-size:12px;color:#64748b;">{{ item.provinsi or '–' }}</td>
+        <td data-label="Kabupaten/Kota">
+          {% if item.kabupaten_kota %}
+          <i class="bi bi-geo-alt text-success"></i> {{ item.kabupaten_kota }}
+          {% else %}<span class="text-muted">–</span>{% endif %}
+        </td>
+        <td data-label="Kecamatan" style="font-size:12px;color:#64748b;">{{ item.kecamatan or '–' }}</td>
+        <td data-label="Tanggal">{{ item.tanggal }}</td>
+        <td data-label="Waktu">{{ item.waktu }}</td>
+        <td data-label="Aksi">
+          <a href="/admin/riwayat/delete/{{ item.id }}"
+             class="btn btn-sm btn-danger" style="border-radius:8px;font-size:11px;"
+             onclick="return confirm('Hapus riwayat ini?')">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+    Tidak ada data ditemukan.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CornScan AI | Admin{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  {% block extra_head %}{% endblock %}
+  <style>
+    :root {
+      --sw: 265px;
+      --g1: #022c22; --g2: #064e3b; --g3: #10b981;
+      --pale: #d1fae5; --bg: #f0fdf4;
+      --shd: 0 4px 24px rgba(0,0,0,0.07);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Poppins',sans-serif; background:var(--bg); }
+
+    /* SIDEBAR */
+    .sidebar {
+      width:var(--sw); height:100vh; position:fixed; left:0; top:0;
+      background:linear-gradient(180deg,var(--g1),var(--g2),#065f46);
+      padding:24px 16px; z-index:1000; overflow-y:auto;
+    }
+    .sidebar-logo {
+      font-size:19px; font-weight:800; color:white;
+      display:flex; align-items:center; gap:10px;
+      padding-bottom:18px; margin-bottom:18px;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-logo i { color:var(--g3); font-size:22px; }
+
+    /* Foto profil di sidebar */
+    .sidebar-profile {
+      display:flex; align-items:center; gap:10px;
+      padding:12px; background:rgba(255,255,255,0.07);
+      border-radius:12px; margin-bottom:20px;
+    }
+    .sidebar-profile .sp-avatar {
+      width:40px; height:40px; border-radius:50%;
+      object-fit:cover; border:2px solid var(--g3);
+      flex-shrink:0;
+    }
+    .sidebar-profile .sp-default {
+      width:40px; height:40px; border-radius:50%;
+      background:linear-gradient(135deg,var(--g3),#34d399);
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-size:16px; flex-shrink:0;
+    }
+    .sidebar-profile .sp-info strong { font-size:13px; color:white; display:block; }
+    .sidebar-profile .sp-info small  { font-size:11px; color:#6ee7b7; }
+
+    .sidebar-sec { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#6ee7b7; margin:16px 0 6px 10px; }
+    .nav-link {
+      color:var(--pale) !important; padding:10px 14px; border-radius:12px;
+      margin-bottom:3px; display:flex; align-items:center; gap:10px;
+      font-size:13px; font-weight:500; transition:.25s; text-decoration:none;
+    }
+    .nav-link:hover { background:rgba(255,255,255,0.1); transform:translateX(4px); }
+    .nav-link.active {
+      background:linear-gradient(90deg,var(--g3),#34d399);
+      color:white !important; font-weight:700;
+      box-shadow:0 6px 20px rgba(16,185,129,.35);
+    }
+    .nav-link i { font-size:15px; width:18px; }
+    .nav-danger { color:#fca5a5 !important; }
+
+    /* MAIN */
+    .main-content { margin-left:var(--sw); padding:28px; min-height:100vh; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+    .topbar h1 { font-size:24px; font-weight:800; color:#0f172a; }
+    .topbar p  { color:#64748b; font-size:13px; margin-top:3px; }
+    .admin-badge {
+      background:white; padding:10px 16px; border-radius:14px;
+      display:flex; align-items:center; gap:10px; box-shadow:var(--shd);
+    }
+    .admin-badge .ab-avatar {
+      width:38px; height:38px; border-radius:50%;
+      object-fit:cover; border:2px solid var(--g3);
+    }
+    .admin-badge .ab-default {
+      width:38px; height:38px; border-radius:50%;
+      background:linear-gradient(135deg,var(--g3),#34d399);
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-size:16px;
+    }
+    .admin-badge strong { font-size:13px; color:#0f172a; }
+    .admin-badge small  { color:#64748b; display:block; font-size:11px; }
+
+    /* STAT CARDS */
+    .stat-card {
+      background:white; border-radius:18px; padding:22px;
+      box-shadow:var(--shd); height:100%; position:relative;
+      overflow:hidden; transition:transform .3s;
+    }
+    .stat-card:hover { transform:translateY(-5px); }
+    .stat-card::after {
+      content:''; position:absolute; width:90px; height:90px; border-radius:50%;
+      top:-25px; right:-25px; background:rgba(16,185,129,.07);
+    }
+    .stat-icon {
+      width:48px; height:48px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; color:white; margin-bottom:14px;
+    }
+    .stat-card h2 { font-size:28px; font-weight:800; color:#0f172a; }
+    .stat-card p  { color:#64748b; font-size:12px; margin:0; }
+
+    /* BOXES */
+    .card-box { background:white; border-radius:18px; padding:24px; box-shadow:var(--shd); }
+    .card-box h5 { font-weight:700; color:#0f172a; margin-bottom:18px; font-size:15px; }
+
+    /* TABLE */
+    .table thead th {
+      color:#64748b; font-size:12px; font-weight:600;
+      border-bottom:2px solid #f1f5f9; padding:12px 14px; white-space:nowrap;
+    }
+    .table tbody td { padding:12px 14px; vertical-align:middle; border-top:1px solid #f8fafc; font-size:13px; }
+
+    /* BADGES */
+    .bdg { padding:5px 12px; border-radius:30px; font-size:11px; font-weight:700; }
+    .bdg-blight  { background:#fee2e2; color:#991b1b; }
+    .bdg-rust    { background:#fef3c7; color:#92400e; }
+    .bdg-gray    { background:#dbeafe; color:#1e40af; }
+    .bdg-healthy { background:#dcfce7; color:#166534; }
+
+    /* FLASH */
+    .flash-wrap { position:fixed; top:18px; right:18px; z-index:9999; min-width:280px; }
+
+    /* FORM */
+    .form-label { font-size:13px; font-weight:600; color:#374151; }
+    .form-control, .form-select {
+      border-radius:10px; border:1.5px solid #e2e8f0;
+      font-size:13px; padding:10px 14px; font-family:'Poppins',sans-serif;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color:var(--g3); box-shadow:0 0 0 3px rgba(16,185,129,.15); outline:none;
+    }
+    .pw-wrap { position:relative; }
+    .pw-wrap .form-control { padding-right:44px; }
+    .pw-eye {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      background:none; border:none; cursor:pointer; color:#64748b; font-size:15px; padding:2px;
+    }
+    .btn-hijau {
+      background:linear-gradient(135deg,var(--g3),#34d399); color:white;
+      border:none; border-radius:10px; padding:10px 20px;
+      font-weight:600; font-size:13px; cursor:pointer; transition:.25s;
+      font-family:'Poppins',sans-serif;
+    }
+    .btn-hijau:hover { opacity:.9; transform:translateY(-1px); }
+
+    .page-footer {
+      text-align:center; color:#94a3b8; font-size:11px;
+      margin-top:36px; padding-bottom:16px; margin-left:var(--sw);
+    }
+
+    /* SIDEBAR TOGGLE (mobile/tablet) */
+    .sidebar-toggle {
+      display:none;
+      position:fixed; top:16px; left:16px; z-index:1100;
+      width:44px; height:44px; border:none; border-radius:12px;
+      background:var(--g2); color:white; font-size:19px;
+      align-items:center; justify-content:center; cursor:pointer;
+      box-shadow:var(--shd);
+    }
+    .sidebar-overlay {
+      display:none;
+      position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:999;
+    }
+    .sidebar-overlay.active { display:block; }
+
+    /* ================= RESPONSIVE ================= */
+    @media (max-width: 991px) {
+      .sidebar {
+        transform:translateX(-100%);
+        transition:transform .3s ease;
+        box-shadow:0 0 40px rgba(0,0,0,.35);
+      }
+      .sidebar.active { transform:translateX(0); }
+      .main-content { margin-left:0; padding:20px 16px; padding-top:76px; }
+      .page-footer  { margin-left:0; }
+      .sidebar-toggle { display:flex; }
+      .topbar { flex-wrap:wrap; gap:12px; }
+    }
+
+    @media (max-width: 576px) {
+      .topbar h1 { font-size:19px; }
+      .card-box  { padding:16px; }
+      .stat-card { padding:16px; }
+      .stat-card h2 { font-size:22px; }
+      .admin-badge { padding:8px 12px; }
+      .admin-badge .sp-info, .admin-badge small { font-size:10px; }
+    }
+
+    /* TABEL -> KARTU DI MOBILE (untuk tabel yang punya kelas .table-stack) */
+    @media (max-width: 768px) {
+      .table-stack thead { display:none; }
+      .table-stack, .table-stack tbody, .table-stack tr, .table-stack td { width:100%; }
+      .table-stack tr {
+        display:block; margin-bottom:14px; border:1px solid #f1f5f9;
+        border-radius:14px; padding:10px 14px; box-shadow:var(--shd);
+      }
+      .table-stack td {
+        display:flex; justify-content:space-between; align-items:center;
+        gap:12px; border:none !important; padding:8px 0; text-align:right;
+      }
+      .table-stack td::before {
+        content:attr(data-label); font-weight:600; color:#64748b;
+        font-size:11px; text-transform:uppercase; text-align:left; flex-shrink:0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- FLASH -->
+<div class="flash-wrap">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }} alert-dismissible fade show shadow-sm"
+       style="border-radius:12px;font-size:13px;font-family:'Poppins',sans-serif;" role="alert">
+    {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+  {% endwith %}
+</div>
+
+<!-- TOGGLE SIDEBAR (mobile/tablet) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Buka menu" aria-expanded="false" aria-controls="sidebarMenu">
+  <i class="bi bi-list"></i>
+</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebarMenu">
+  <div class="sidebar-logo"><i class="bi bi-cpu-fill"></i> CornScan AI</div>
+
+  <!-- Info admin di sidebar -->
+  <div class="sidebar-profile">
+    {% set foto = get_admin_foto() %}
+    {% if foto %}
+    <img src="{{ url_for('static', filename='img/profile/' + foto) }}" class="sp-avatar" alt="Foto Profil">
+    {% else %}
+    <div class="sp-default"><i class="bi bi-person-fill"></i></div>
+    {% endif %}
+    <div class="sp-info">
+      <strong>{{ admin_nama }}</strong>
+      <small>Administrator</small>
+    </div>
+  </div>
+
+  <div class="sidebar-sec">Menu Utama</div>
+  <a href="/admin/dashboard" class="nav-link {% if page=='dashboard' %}active{% endif %}">
+    <i class="bi bi-grid-fill"></i> Dashboard
+  </a>
+  <a href="/admin/statistik" class="nav-link {% if page=='statistik' %}active{% endif %}">
+    <i class="bi bi-bar-chart-fill"></i> Statistik
+  </a>
+  <a href="/admin/riwayat" class="nav-link {% if page=='riwayat' %}active{% endif %}">
+    <i class="bi bi-clock-history"></i> Riwayat Diagnosa
+  </a>
+  <a href="/admin/penyakit" class="nav-link {% if page=='penyakit' %}active{% endif %}">
+    <i class="bi bi-virus"></i> Data Penyakit
+  </a>
+
+  <div class="sidebar-sec">Akun</div>
+  <a href="/admin/profile" class="nav-link {% if page=='profile' %}active{% endif %}">
+    <i class="bi bi-person-circle"></i> Pengaturan Admin
+  </a>
+  <a href="/logout" class="nav-link nav-danger">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
+</div>
+
+<div class="main-content">{% block content %}{% endblock %}</div>
+
+<div class="page-footer">&copy; 2026 &mdash; Sistem Diagnosa Penyakit Daun Jagung by Iin Wulandari</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+  var toggle  = document.getElementById('sidebarToggle');
+  var sidebar = document.getElementById('sidebarMenu');
+  var overlay = document.getElementById('sidebarOverlay');
+  if (!toggle || !sidebar || !overlay) return;
+
+  function setState(open) {
+    sidebar.classList.toggle('active', open);
+    overlay.classList.toggle('active', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  }
+  toggle.addEventListener('click', function () {
+    setState(!sidebar.classList.contains('active'));
+  });
+  overlay.addEventListener('click', function () { setState(false); });
+  // Tutup sidebar otomatis kalau menu di dalamnya diklik (mobile)
+  sidebar.querySelectorAll('a.nav-link').forEach(function (link) {
+    link.addEventListener('click', function () { setState(false); });
+  });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 991) setState(false);
+  });
+})();
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

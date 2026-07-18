@@ -1,0 +1,153 @@
+{% extends "base_admin.html" %}
+{% set page = 'dashboard' %}
+{% block title %}Dashboard | CornScan AI{% endblock %}
+{% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endblock %}
+
+{% block content %}
+<div class="topbar">
+  <div><h1>Dashboard Admin</h1><p>Monitoring real-time sistem AI deteksi penyakit daun jagung</p></div>
+  <div class="admin-badge">
+    {% set foto = get_admin_foto() %}
+    {% if foto %}
+    <img src="{{ url_for('static', filename='img/profile/' + foto) }}" class="ab-avatar" alt="Foto">
+    {% else %}
+    <div class="ab-default"><i class="bi bi-person-fill"></i></div>
+    {% endif %}
+    <div><strong>{{ admin_nama }}</strong><small>Super Administrator</small></div>
+  </div>
+</div>
+
+<!-- 6 STAT CARDS -->
+<div class="row g-3 mb-4">
+  <div class="col-xl-2 col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#34d399)"><i class="bi bi-clipboard-data-fill"></i></div>
+      <h2>{{ total_scan }}</h2><p>Total Diagnosa</p>
+    </div>
+  </div>
+  <div class="col-xl-2 col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"><i class="bi bi-calendar-check-fill"></i></div>
+      <h2>{{ scan_hari_ini }}</h2><p>Hari Ini</p>
+    </div>
+  </div>
+  <div class="col-xl-2 col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"><i class="bi bi-virus"></i></div>
+      <h2>{{ jml_penyakit }}</h2><p>Data Penyakit</p>
+    </div>
+  </div>
+  <div class="col-xl-2 col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i class="bi bi-map-fill"></i></div>
+      <h2>{{ jml_provinsi }}</h2><p>Provinsi</p>
+    </div>
+  </div>
+  <div class="col-xl-2 col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)"><i class="bi bi-geo-alt-fill"></i></div>
+      <h2>{{ jml_kab }}</h2><p>Kab/Kota</p>
+    </div>
+  </div>
+  <div class="col-xl-2 col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#ec4899,#f472b6)"><i class="bi bi-pin-map-fill"></i></div>
+      <h2>{{ jml_kec }}</h2><p>Kecamatan</p>
+    </div>
+  </div>
+</div>
+
+<!-- hidden payload untuk chart — data REAL dari DB, bukan dummy -->
+<div id="chartPayload"
+     data-glabels='{{ g_labels|tojson }}'
+     data-gdata='{{ g_data|tojson }}'
+     data-dlabels='{{ d_labels|tojson }}'
+     data-ddata='{{ d_data|tojson }}'
+     style="display:none;">
+</div>
+
+
+<!-- CHARTS -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="card-box"><h5>Tren Diagnosa 7 Hari Terakhir</h5><canvas id="lineChart" height="110"></canvas></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card-box"><h5>Distribusi Penyakit</h5><canvas id="donutChart"></canvas></div>
+  </div>
+</div>
+
+<!-- TOP WILAYAH & RINGKASAN -->
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card-box">
+      <h5>Top 5 Kabupaten/Kota</h5>
+      {% if top_wilayah %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Kabupaten/Kota</th><th>Provinsi</th><th class="text-end">Diagnosa</th></tr></thead>
+          <tbody>
+          {% for w in top_wilayah %}
+          <tr>
+            <td><i class="bi bi-geo-alt text-success me-1"></i><strong>{{ w.kabupaten_kota }}</strong></td>
+            <td style="font-size:11px;color:#64748b;">{{ w.provinsi }}</td>
+            <td class="text-end fw-bold text-success">{{ w.j }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted text-center py-3" style="font-size:13px">Belum ada data wilayah. Akan muncul setelah user melakukan diagnosa.</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-box">
+      <h5>Ringkasan Sistem</h5>
+      <div class="p-3 rounded-3 mb-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+        <div style="font-size:12px;color:#64748b;">Penyakit Paling Banyak</div>
+        <div class="fw-bold fs-5 text-success mt-1">{{ penyakit_terbanyak }}</div>
+      </div>
+      <div class="p-3 rounded-3 mb-3" style="background:#f0f9ff;border:1px solid #bae6fd">
+        <div style="font-size:12px;color:#64748b;">Jangkauan Wilayah</div>
+        <div class="fw-bold text-primary mt-1">{{ jml_provinsi }} Provinsi &bull; {{ jml_kab }} Kab/Kota &bull; {{ jml_kec }} Kecamatan</div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/admin/riwayat"   class="btn btn-outline-success btn-sm flex-fill text-center">Riwayat</a>
+        <a href="/admin/statistik" class="btn btn-outline-primary  btn-sm flex-fill text-center">Statistik</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  var el = document.getElementById('chartPayload');
+  var gL = JSON.parse(el.getAttribute('data-glabels'));
+  var gD = JSON.parse(el.getAttribute('data-gdata'));
+  var dL = JSON.parse(el.getAttribute('data-dlabels'));
+  var dD = JSON.parse(el.getAttribute('data-ddata'));
+  var C  = ['#ef4444','#f59e0b','#3b82f6','#10b981','#8b5cf6'];
+
+  if(!gL.length){ gL=['(belum ada)']; gD=[0]; }
+  if(!dL.length){ dL=['(belum ada)']; dD=[0]; }
+
+  new Chart(document.getElementById('lineChart'),{
+    type:'line',
+    data:{labels:gL,datasets:[{label:'Diagnosa',data:gD,borderColor:'#10b981',
+      backgroundColor:'rgba(16,185,129,.15)',fill:true,tension:0.4,
+      pointRadius:5,pointBackgroundColor:'#10b981'}]},
+    options:{plugins:{legend:{display:false}},
+      scales:{y:{beginAtZero:true,ticks:{font:{size:11}}},x:{ticks:{font:{size:11}}}}}
+  });
+  new Chart(document.getElementById('donutChart'),{
+    type:'doughnut',
+    data:{labels:dL,datasets:[{data:dD,backgroundColor:C,borderWidth:2,borderColor:'#fff'}]},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},cutout:'60%'}
+  });
+})();
+</script>
+{% endblock %}

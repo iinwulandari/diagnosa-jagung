@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin | CornScan AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:'Poppins',sans-serif;
+            background:linear-gradient(135deg,#022c22,#064e3b,#065f46);
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+        }
+        .auth-card {
+            background:white; padding:44px 40px; border-radius:24px;
+            width:100%; max-width:420px; box-shadow:0 25px 60px rgba(0,0,0,0.3);
+        }
+        .logo-wrap { text-align:center; margin-bottom:28px; }
+        .logo-wrap .icon {
+            width:64px; height:64px; background:linear-gradient(135deg,#10b981,#059669);
+            border-radius:18px; display:inline-flex; align-items:center; justify-content:center;
+            font-size:28px; color:white; margin-bottom:12px;
+        }
+        .logo-wrap h2 { font-size:22px; font-weight:700; color:#0f172a; }
+        .logo-wrap p  { color:#64748b; font-size:13px; margin-top:4px; }
+        .input-group { margin-bottom:16px; }
+        .input-group label { font-size:13px; font-weight:600; color:#374151; display:block; margin-bottom:6px; }
+        .input-group input {
+            width:100%; padding:12px 16px; border:1.5px solid #e2e8f0;
+            border-radius:12px; font-size:14px; font-family:'Poppins',sans-serif;
+            outline:none; transition:.25s; color:#0f172a;
+        }
+        .input-group input:focus { border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.15); }
+        .pw-wrap { position:relative; }
+        .pw-wrap input { padding-right:46px; }
+        .pw-toggle {
+            position:absolute; right:14px; top:50%; transform:translateY(-50%);
+            cursor:pointer; color:#64748b; background:none; border:none; font-size:16px;
+        }
+        .btn-login {
+            width:100%; padding:13px; background:linear-gradient(135deg,#10b981,#059669);
+            color:white; border:none; border-radius:12px; font-size:15px;
+            font-weight:700; cursor:pointer; transition:.25s; margin-top:8px;
+            font-family:'Poppins',sans-serif;
+        }
+        .btn-login:hover { opacity:.9; transform:translateY(-1px); }
+        .error-box {
+            background:#fee2e2; color:#dc2626; padding:12px 16px;
+            border-radius:10px; margin-bottom:16px; font-size:13px;
+        }
+        .back-link { text-align:center; margin-top:20px; font-size:13px; color:#64748b; }
+        .back-link a { color:#059669; font-weight:600; text-decoration:none; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="logo-wrap">
+            <div class="icon">🌽</div>
+            <h2>CornScan AI</h2>
+            <p>Masuk ke panel administrator</p>
+        </div>
+
+        {% if error %}
+        <div class="error-box">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Masukkan username" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <div class="pw-wrap">
+                    <input type="password" name="password" id="pwField" placeholder="Masukkan password" required>
+                    <button type="button" class="pw-toggle" onclick="togglePw()">👁</button>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">Masuk ke Dashboard</button>
+        </form>
+
+        <div class="back-link">
+            <a href="/">← Kembali ke Beranda</a>
+        </div>
+    </div>
+
+    <script>
+    function togglePw() {
+        const f = document.getElementById('pwField');
+        f.type = f.type === 'password' ? 'text' : 'password';
+    }
+    </script>
+</body>
+</html>

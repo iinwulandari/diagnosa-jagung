@@ -1,0 +1,241 @@
+{% extends "base_admin.html" %}
+{% set page = 'statistik' %}
+{% block title %}Statistik | CornScan AI{% endblock %}
+{% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endblock %}
+
+{% block content %}
+<div class="topbar">
+  <div><h1>Statistik Diagnosa</h1><p>Analisis distribusi penyakit & sebaran wilayah Indonesia</p></div>
+  <div class="admin-badge">
+    {% set foto = get_admin_foto() %}
+    {% if foto %}<img src="{{ url_for('static', filename='img/profile/' + foto) }}" class="ab-avatar">
+    {% else %}<div class="ab-default"><i class="bi bi-person-fill"></i></div>{% endif %}
+    <div><strong>{{ admin_nama }}</strong><small>Super Administrator</small></div>
+  </div>
+</div>
+
+<!-- FILTER -->
+<div class="card-box mb-4">
+  <form method="GET" action="/admin/statistik" class="row g-2 align-items-end">
+    <div class="col-md-2">
+      <label class="form-label">Periode</label>
+      <select name="filter" class="form-select">
+        <option value="all"    {% if filter_period=='all'    %}selected{% endif %}>Semua Data</option>
+        <option value="7hari"  {% if filter_period=='7hari'  %}selected{% endif %}>7 Hari Terakhir</option>
+        <option value="30hari" {% if filter_period=='30hari' %}selected{% endif %}>30 Hari Terakhir</option>
+        <option value="6bulan" {% if filter_period=='6bulan' %}selected{% endif %}>6 Bulan Terakhir</option>
+        <option value="1tahun" {% if filter_period=='1tahun' %}selected{% endif %}>1 Tahun Terakhir</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Dari Tanggal</label>
+      <input type="date" name="dari" class="form-control" value="{{ dari }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Sampai Tanggal</label>
+      <input type="date" name="sampai" class="form-control" value="{{ sampai }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Filter Provinsi</label>
+      <select name="provinsi" class="form-select">
+        <option value="">Semua Provinsi</option>
+        {% for p in prov_list %}
+        <option value="{{ p }}" {% if prov_f==p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button type="submit" class="btn-hijau flex-fill"><i class="bi bi-funnel-fill me-1"></i>Terapkan</button>
+      <a href="/admin/statistik" class="btn btn-outline-secondary flex-fill" style="border-radius:10px;font-size:13px;padding:10px;">Reset</a>
+    </div>
+  </form>
+</div>
+
+<!-- SUMMARY CARDS -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg,#10b981,#34d399);">
+                <i class="bi bi-clipboard-data-fill"></i>
+            </div>
+            <h2>{{ total }}</h2>
+            <p>Total Diagnosa</p>
+        </div>
+    </div>
+
+    {% for d in distribusi %}
+    <div class="col-md-3">
+        <div class="stat-card">
+
+            {% if d.hasil_prediksi == 'Healthy' %}
+            <div class="stat-icon" style="background: linear-gradient(135deg,#10b981,#34d399);">
+                <i class="bi bi-heart-fill"></i>
+            </div>
+
+            {% elif d.hasil_prediksi == 'Blight' %}
+            <div class="stat-icon" style="background: linear-gradient(135deg,#ef4444,#f87171);">
+                <i class="bi bi-bug-fill"></i>
+            </div>
+
+            {% elif d.hasil_prediksi == 'Common_Rust' %}
+            <div class="stat-icon" style="background: linear-gradient(135deg,#f59e0b,#fbbf24);">
+                <i class="bi bi-bug-fill"></i>
+            </div>
+
+            {% else %}
+            <div class="stat-icon" style="background: linear-gradient(135deg,#3b82f6,#60a5fa);">
+                <i class="bi bi-bug-fill"></i>
+            </div>
+            {% endif %}
+
+            <h2>{{ d.j }}</h2>
+            <p>{{ d.hasil_prediksi|replace('_',' ') }}</p>
+
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- hidden payload chart -->
+<div id="chartPayload"
+     data-tlabels='{{ t_labels|tojson }}'
+     data-tdata='{{ t_data|tojson }}'
+     data-dlabels='{{ distribusi_labels|tojson }}'
+     data-ddata='{{ distribusi_data|tojson }}'
+     style="display:none;">
+</div>
+
+<!-- CHARTS -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="card-box"><h5>Tren Diagnosa Harian</h5><canvas id="trendChart" height="110"></canvas></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card-box"><h5>Distribusi Penyakit</h5><canvas id="pieChart"></canvas></div>
+  </div>
+</div>
+
+<!-- TABEL PER WILAYAH -->
+<div class="card-box">
+  <h5><i class="bi bi-geo-alt-fill text-success me-2"></i>Statistik Per Kabupaten/Kota</h5>
+  {% if per_wilayah %}
+  <div class="table-responsive">
+    <table class="table table-hover table-stack">
+      <thead>
+        <tr><th>#</th><th>Provinsi</th><th>Kabupaten/Kota</th><th>Kecamatan</th><th>Diagnosa</th><th>Penyakit Terdeteksi</th></tr>
+      </thead>
+      <tbody>
+      {% for w in per_wilayah %}
+      <tr>
+        <td data-label="#">{{ loop.index }}</td>
+        <td data-label="Provinsi" style="font-size:12px;color:#64748b;">{{ w.provinsi }}</td>
+        <td data-label="Kabupaten/Kota"><i class="bi bi-geo-alt text-success me-1"></i><strong>{{ w.kabupaten_kota }}</strong></td>
+        <td data-label="Kecamatan" style="font-size:12px;color:#64748b;">{{ w.kecamatan }}</td>
+        <td data-label="Diagnosa"><span class="fw-bold text-success">{{ w.j }}</span></td>
+        <td data-label="Penyakit Terdeteksi">
+          {% if w.penyakit %}{% for p in w.penyakit.split(',') %}
+          <span class="bdg {% if 'Blight' in p %}bdg-blight{% elif 'Rust' in p %}bdg-rust{% elif 'Gray' in p %}bdg-gray{% else %}bdg-healthy{% endif %} me-1">{{ p|replace('_',' ') }}</span>
+          {% endfor %}{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-4 text-muted" style="font-size:13px">
+    <i class="bi bi-geo-alt fs-1 d-block mb-2 text-secondary"></i>
+    Belum ada data wilayah. Data muncul setelah user memilih lokasi saat diagnosa.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+
+  var el = document.getElementById('chartPayload');
+
+  if(!el){
+      console.error('chartPayload tidak ditemukan');
+      return;
+  }
+
+  let tL = [];
+  let tD = [];
+  let dL = [];
+  let dD = [];
+
+  try{
+      tL = JSON.parse(el.dataset.tlabels || '[]');
+      tD = JSON.parse(el.dataset.tdata || '[]');
+      dL = JSON.parse(el.dataset.dlabels || '[]');
+      dD = JSON.parse(el.dataset.ddata || '[]');
+  }catch(err){
+      console.error('Error parsing chart data:', err);
+      console.log(el.dataset);
+      return;
+  }
+
+  var C = ['#ef4444','#f59e0b','#3b82f6','#10b981'];
+
+  if(!tL.length){
+      tL = ['Belum Ada Data'];
+      tD = [0];
+  }
+
+  if(!dL.length){
+      dL = ['Belum Ada Data'];
+      dD = [0];
+  }
+
+  new Chart(document.getElementById('trendChart'),{
+      type:'bar',
+      data:{
+          labels:tL,
+          datasets:[{
+              label:'Jumlah',
+              data:tD,
+              backgroundColor:'rgba(16,185,129,.75)',
+              borderRadius:8,
+              borderSkipped:false
+          }]
+      },
+      options:{
+          responsive:true,
+          plugins:{legend:{display:false}},
+          scales:{
+              y:{beginAtZero:true},
+              x:{}
+          }
+      }
+  });
+
+  new Chart(document.getElementById('pieChart'),{
+      type:'doughnut',
+      data:{
+          labels:dL,
+          datasets:[{
+              data:dD,
+              backgroundColor:C,
+              borderWidth:2,
+              borderColor:'#fff'
+          }]
+      },
+      options:{
+          responsive:true,
+          plugins:{
+              legend:{
+                  position:'bottom'
+              }
+          },
+          cutout:'58%'
+      }
+  });
+
+})();
+</script>
+{% endblock %}

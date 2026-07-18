@@ -1,0 +1,468 @@
+/* =========================
+   GOOGLE FONT
+========================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* =========================
+   RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+}
+
+body{
+    background:#eef7f4;
+    color:#1e293b;
+}
+
+/* =========================
+   LOGIN PAGE
+========================= */
+
+.auth-page{
+    width:100%;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    linear-gradient(
+        135deg,
+        #022c22,
+        #064e3b,
+        #059669
+    );
+}
+
+.auth-card{
+    width:100%;
+    max-width:420px;
+    background:white;
+    padding:45px;
+    border-radius:28px;
+    box-shadow:
+    0 20px 50px rgba(0,0,0,0.15);
+}
+
+.auth-card h1{
+    text-align:center;
+    margin-bottom:30px;
+    font-size:34px;
+    color:#064e3b;
+    font-weight:700;
+}
+
+.input-group{
+    margin-bottom:20px;
+}
+
+.input-group input{
+    width:100%;
+    padding:16px 18px;
+    border-radius:14px;
+    border:1px solid #dbe4ea;
+    background:#f8fafc;
+    font-size:15px;
+    transition:0.3s;
+}
+
+.input-group input:focus{
+    outline:none;
+    border-color:#10b981;
+    box-shadow:
+    0 0 0 4px rgba(16,185,129,0.15);
+}
+
+.btn-primary{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    background:
+    linear-gradient(
+        135deg,
+        #10b981,
+        #059669
+    );
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:
+    0 10px 20px rgba(16,185,129,0.3);
+}
+
+/* =========================
+   ADMIN LAYOUT
+========================= */
+
+.admin-wrapper{
+    display:flex;
+    min-height:100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    width:280px;
+    background:
+    linear-gradient(
+        180deg,
+        #022c22,
+        #064e3b,
+        #065f46
+    );
+
+    color:white;
+    padding:30px 22px;
+    position:fixed;
+    height:100vh;
+    overflow:auto;
+}
+
+.logo-admin{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:50px;
+}
+
+.logo-admin h2{
+    font-size:34px;
+    font-weight:700;
+}
+
+.logo-admin i{
+    font-size:34px;
+    color:#34d399;
+}
+
+.sidebar-title{
+    color:#6ee7b7;
+    font-size:13px;
+    margin-bottom:20px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+/* =========================
+   MENU
+========================= */
+
+.sidebar-menu{
+    list-style:none;
+}
+
+.sidebar-menu li{
+    margin-bottom:12px;
+}
+
+.sidebar-menu a{
+    text-decoration:none;
+    color:#d1fae5;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px 18px;
+    border-radius:16px;
+    transition:0.3s;
+    font-size:16px;
+    font-weight:500;
+}
+
+.sidebar-menu a:hover{
+    background:rgba(255,255,255,0.12);
+    transform:translateX(4px);
+}
+
+.sidebar-menu a.active{
+    background:
+    linear-gradient(
+        135deg,
+        #10b981,
+        #34d399
+    );
+
+    color:white;
+    box-shadow:
+    0 10px 20px rgba(16,185,129,0.25);
+}
+
+.sidebar-menu i{
+    font-size:18px;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+.main-content{
+    margin-left:280px;
+    flex:1;
+    padding:35px;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+}
+
+.topbar h1{
+    font-size:42px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.topbar p{
+    color:#64748b;
+    margin-top:8px;
+}
+
+.admin-profile{
+    background:white;
+    padding:14px 20px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.06);
+}
+
+.admin-profile img{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.dashboard-cards{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit, minmax(240px,1fr));
+    gap:25px;
+    margin-bottom:35px;
+}
+
+.card-box{
+    background:white;
+    border-radius:28px;
+    padding:30px;
+    position:relative;
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+
+    transition:0.3s;
+}
+
+.card-box:hover{
+    transform:translateY(-6px);
+}
+
+.card-box::before{
+    content:'';
+    position:absolute;
+    top:-60px;
+    right:-60px;
+    width:140px;
+    height:140px;
+    background:
+    rgba(16,185,129,0.08);
+
+    border-radius:50%;
+}
+
+.card-icon{
+    width:70px;
+    height:70px;
+    border-radius:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:22px;
+    font-size:30px;
+    color:white;
+}
+
+.green{
+    background:
+    linear-gradient(
+        135deg,
+        #10b981,
+        #34d399
+    );
+}
+
+.blue{
+    background:
+    linear-gradient(
+        135deg,
+        #3b82f6,
+        #60a5fa
+    );
+}
+
+.orange{
+    background:
+    linear-gradient(
+        135deg,
+        #f59e0b,
+        #fbbf24
+    );
+}
+
+.red{
+    background:
+    linear-gradient(
+        135deg,
+        #ef4444,
+        #fb7185
+    );
+}
+
+.card-box h2{
+    font-size:52px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.card-box p{
+    color:#64748b;
+    font-size:18px;
+}
+
+/* =========================
+   CONTENT GRID
+========================= */
+
+.content-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+}
+
+/* =========================
+   CHART BOX
+========================= */
+
+.chart-box{
+    background:white;
+    padding:30px;
+    border-radius:28px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+}
+
+.chart-box h3{
+    font-size:34px;
+    margin-bottom:20px;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.table-box{
+    background:white;
+    border-radius:28px;
+    padding:30px;
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th{
+    background:#ecfdf5;
+    padding:16px;
+    text-align:left;
+    color:#065f46;
+}
+
+table td{
+    padding:16px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+/* =========================
+   DROPDOWN FILTER
+========================= */
+
+.filter-box{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:25px;
+}
+
+.filter-box select{
+    padding:14px 18px;
+    border-radius:14px;
+    border:none;
+    background:white;
+    font-weight:600;
+    box-shadow:
+    0 8px 20px rgba(0,0,0,0.06);
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:#64748b;
+    font-size:14px;
+    padding:20px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:991px){
+
+    .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+    }
+
+    .main-content{
+        margin-left:0;
+    }
+
+    .content-grid{
+        grid-template-columns:1fr;
+    }
+}
