@@ -27,6 +27,24 @@
         footer{background:#0f172a;color:#94a3b8;padding:28px 20px;text-align:center;font-size:14px;}
         @media print{nav,.action-btns,footer{display:none;}}
 
+        /* Tombol Kembali - full styling di sini, tidak bergantung ke style.css */
+        .back-btn {
+            background: linear-gradient(135deg, #15803d, #20c997);
+            color: #fff !important;
+            padding: 12px 26px;
+            border-radius: 12px;
+            text-decoration: none !important;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(21, 128, 61, 0.15);
+            transition: 0.3s ease;
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(21, 128, 61, 0.3); }
+        .back-btn:visited { color: #fff !important; }
+
         /* Cegah tombol "Kembali" kepotong/hilang di layar sempit */
         nav { flex-wrap: wrap; row-gap: 10px; }
         @media (max-width: 480px) {
@@ -39,7 +57,7 @@
 <body>
     <nav>
         <a href="/" class="logo"><i class="fa-solid fa-seedling" style="color:#059669;"></i> CornScan <span>AI</span></a>
-        <a href="/#diagnosa" class="back-btn" style="background:#059669;text-decoration:none;color:white;">
+        <a href="/#diagnosa" class="back-btn">
             <i class="fa-solid fa-arrow-left"></i> Kembali
         </a>
     </nav>
